@@ -9,10 +9,6 @@ services:
     restart: always
     env_file:
       - .env
-    environment:
-      POSTGRES_USER: bookstore
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: bookstore
     volumes:
        - db:/var/lib/postgresql/data
 
