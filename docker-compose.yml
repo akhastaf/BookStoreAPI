@@ -12,5 +12,5 @@ services:
       POSTGRES_PASSWORD: root
       POSTGRES_DB: bookstore
     volumes:
-       - ./data:/var/lib/postgresql/data
+       - db:/var/lib/postgresql/data
 
