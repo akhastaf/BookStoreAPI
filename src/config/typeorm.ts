@@ -1,6 +1,7 @@
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModuleAsyncOptions, TypeOrmModuleOptions } from "@nestjs/typeorm";
 import * as dotenv from "dotenv";
+import { User } from "src/user/entites/user.entity";
 import { DataSource, DataSourceOptions } from "typeorm";
 dotenv.config({ path: __dirname+'/../../.env' });
 
@@ -10,41 +11,37 @@ dotenv.config({ path: __dirname+'/../../.env' });
 export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
     imports: [ConfigModule],
     inject: [ConfigService],
-    useFactory:async (): Promise<TypeOrmModuleOptions> => {
+    useFactory :async () : Promise<TypeOrmModuleOptions> => {
         return {
+            type: 'postgres',
             host: process.env.DB_HOST,
             port: parseInt(process.env.DB_PORT),
-            username: process.env.DB_USER,
-            password: process.env.DB_PASSWORD,
-            database: process.env.DB_NAME,
+            username: process.env.POSTGRES_USER,
+            password: process.env.POSTGRES_PASSWORD,
+            database: process.env.POSTGRES_DB,
             autoLoadEntities: true,
             entities: [__dirname + '/../**/*.entity{.ts,.js}'],
             migrations: [__dirname + '/../migrations/*{.ts,.js}'],
-            synchronize: false,
-            extra: {
-                charset: 'utf8mb4_unicode_ci',
-            },
+            synchronize: true,
             logging: true,
-        }
+        };
     }
 }
 
 
 export const typeOrmConfig: DataSourceOptions = {
+    migrationsTableName: 'migrations',
     type: 'postgres',
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT),
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
+    username: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
+    database: process.env.POSTGRES_DB,
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
     migrations: [__dirname + '/../migrations/*{.ts,.js}'],
-    synchronize: false,
-    extra: {
-        charset: 'utf8mb4_unicode_ci',
-    },
+    synchronize: true,
     logging: true,
 }
 
 
-export const AppDataSource = new DataSource(typeOrmConfig)
+export const AppDataSource = new DataSource(typeOrmConfig);
