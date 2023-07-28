@@ -1,0 +1,26 @@
+meilisearch.localhost {
+  # Enable the static file server.
+  file_server
+  reverse_proxy meilisearch:7700
+}
+grafana.localhost {
+  # rewrite /grafana/(.*) /$1
+  # reverse_proxy grafana:3000
+  # file_server
+  reverse_proxy /grafana/* grafana:3000
+}
+adminer.localhost {
+  reverse_proxy admin:8080
+}
+
+localhost {
+  
+  # Enable the static file server.
+  file_server
+  reverse_proxy web:3000
+
+  # # reverse_proxy /grafana/* grafana:3000
+  # reverse_proxy meilisearch:7700
+  
+}
+
