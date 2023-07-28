@@ -1,6 +1,6 @@
 import { Book } from "src/book/entites/book.entity";
-import { slugify } from "src/utils/slugify";
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn, BeforeInsert, Index } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn, BeforeInsert, Index, DeleteDateColumn, BeforeUpdate } from "typeorm";
+import { slugifyUtil } from "src/utils/slugify";
 
 @Entity('series')
 export class Serie {
@@ -9,6 +9,13 @@ export class Serie {
 
   @Column()
   name: string;
+
+  @Column({
+    type: 'text',
+    nullable: true
+  })
+  description: string
+
 
   @Column()
   numberOfBooks: number;
@@ -30,8 +37,11 @@ export class Serie {
   @UpdateDateColumn()
   updated_at: Date
 
+  @DeleteDateColumn()
+  deleted_at: Date
+
   @BeforeInsert()
   slugify(): void {
-    this.slug = slugify(this.name, this.id)
+    this.slug = slugifyUtil(this.name)
   }
 }
