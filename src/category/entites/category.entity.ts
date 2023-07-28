@@ -1,6 +1,6 @@
 import { Book } from "src/book/entites/book.entity";
-import { slugify } from "src/utils/slugify";
-import { BeforeInsert, Column, CreateDateColumn, Entity, Index, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { slugifyUtil } from "src/utils/slugify";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, DeleteDateColumn, Entity, Index, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('categories')
 export class Category {
@@ -26,7 +26,7 @@ export class Category {
     slug: string
 
     @ManyToOne(() => Category, (category) => category.sub_categories)
-    parent_category: number
+    parent_category: Category
     
     @OneToMany(() => Category, (category) => category.parent_category)
     sub_categories: Category[]
@@ -40,8 +40,12 @@ export class Category {
     @UpdateDateColumn()
     updated_at: Date
 
+    @DeleteDateColumn()
+    deleted_at: Date
+
     @BeforeInsert()
+    @BeforeUpdate()
     slugify(): void {
-        this.slug = slugify(this.name, this.id)
+        this.slug = slugifyUtil(this.name)
     }
 }
