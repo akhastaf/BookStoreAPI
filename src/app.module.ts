@@ -20,12 +20,19 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmAsyncConfig } from './config/typeorm';
-// import { BadgeModule } from './badge/badge.module';
 import { AwardModule } from './award/award.module';
 import { SerieModule } from './serie/serie.module';
+import { SearchModule } from './search/search.module';
+import { MailModule } from './mail/mail.module';
+import { MeilisearchModule } from './meilisearch/meilisearch.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'client')
+    }),
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync(typeOrmAsyncConfig),
     UserModule,
@@ -46,9 +53,11 @@ import { SerieModule } from './serie/serie.module';
     ReviewModule,
     AddressModule,
     AuthModule,
-    // BadgeModule,
     AwardModule,
-    SerieModule],
+    SerieModule,
+    SearchModule,
+    MailModule,
+    MeilisearchModule],
   controllers: [],
   providers: [],
 })
