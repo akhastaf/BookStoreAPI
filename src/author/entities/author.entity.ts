@@ -1,8 +1,10 @@
 import { AwardToAuthor } from "src/award/entites/awardAuthor.entity";
 import { Book } from "src/book/entites/book.entity";
 import { Image } from "src/image/entites/image.entity";
-import { slugify } from "src/utils/slugify";
-import { BeforeInsert, Column, CreateDateColumn, Entity, Index, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, DeleteDateColumn, Entity, Index, JoinColumn, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { uuid as uuidv4 } from "uuidv4";
+import { slugifyUtil } from "src/utils/slugify";
+
 
 @Entity('authors')
 export class Author {
@@ -17,7 +19,7 @@ export class Author {
         type: 'text',
         nullable: true
     })
-    description: string
+    biography: string
 
     @Column({
         unique: true
@@ -27,14 +29,15 @@ export class Author {
     })
     slug: string
 
-    @OneToOne(() => Image)
+    @OneToOne(() => Image, () => {}, { cascade: ['soft-remove']})
+    @JoinColumn()
     image: Image
 
-    @ManyToMany(() => Book, (book) => book.authors, { onDelete: 'SET NULL'})
+    @ManyToMany(() => Book, (book) => book.authors)
     books: Book[]
 
-    @OneToMany(() => AwardToAuthor, (awardToAuthor) => awardToAuthor.author)
-    awardToAuthor: AwardToAuthor[]
+    @OneToMany(() => AwardToAuthor, (awardToAuthor) => awardToAuthor.author, { cascade: true })
+    awardsToAuthor: AwardToAuthor[]
 
     @CreateDateColumn()
     created_at: Date
@@ -42,8 +45,12 @@ export class Author {
     @UpdateDateColumn()
     updated_at: Date
 
+    @DeleteDateColumn()
+    deleted_at: Date
+
     @BeforeInsert()
+    @BeforeUpdate()
     slugify(): void {
-        this.slug = slugify(this.name, this.id)
+        this.slug = slugifyUtil(this.name)
     }
 }
