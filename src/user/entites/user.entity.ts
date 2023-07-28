@@ -1,11 +1,17 @@
 import { Address } from "src/address/entities/address.entity";
-import { Cart } from "src/cart/entites/cart.entity";
+import { CartItem } from "src/cart/entites/cart.entity";
 import { Image } from "src/image/entites/image.entity";
 import { Order } from "src/order/entites/order.entity";
 import { Role } from "src/role/entites/role.entity";
 import { Wishlist } from "src/wishlist/entites/wishlist.entity";
-import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import * as bcrypt from "bcryptjs"
+import { Exclude } from "class-transformer";
+
+export enum PROVIDER {
+    GOOGLE='google',
+    FACEBOOK='facebook'
+}
 
 @Entity('users')
 export class User {
@@ -21,27 +27,38 @@ export class User {
     })
     email: string
 
-    @Column()
+    @Exclude()
+    @Column({
+        nullable: true
+    })
     password: string
 
-    @Column()
+    @Column({
+        nullable:true
+    })
     phone: string
 
-    @Column()
+    @Column({
+        nullable: true
+    })
     address: string
 
     @Column({ default: false })
     two_factor_enabled: boolean;
 
+    @Exclude()
     @Column({ nullable: true })
     two_factor_secret: string;
 
+    @Exclude()
     @Column({ nullable: true })
     two_factor_recovery_code: string;
 
+    @Exclude()
     @Column({ nullable: true })
     password_reset_token: string;
 
+    @Exclude()
     @Column({
         nullable: true
     })
@@ -52,13 +69,24 @@ export class User {
     })
     is_verified: boolean
 
-    @OneToMany(() => Cart, (cart) => cart.user, {onDelete: 'CASCADE'})
-    carts: Cart[]
+    @Column({
+        nullable: true,
+        type: 'enum',
+        enum: PROVIDER,
+        default: PROVIDER.GOOGLE
+    })
+    provider: PROVIDER
+
+    @OneToMany(() => CartItem, (cartitem) => cartitem.user, {onDelete: 'CASCADE'})
+    @JoinColumn()
+    carts: CartItem[]
 
     @OneToOne(() => Image)
+    @JoinColumn()
     avatar: Image
 
     @ManyToOne(() => Role, {onDelete: 'SET NULL' })
+    @JoinColumn()
     role: Role
 
     @OneToMany(() => Address, (address) => address.user)
@@ -78,9 +106,17 @@ export class User {
     @UpdateDateColumn()
     updated_at: Date
 
+    @DeleteDateColumn()
+    deleted_at: Date
+
     @BeforeInsert()
     async hashPassword() : Promise<void> {
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
+        if (this.password != undefined) 
+            this.password = await bcrypt.hash(this.password, 10)
+        console.log(this.password)
+    }
+
+    constructor(partial: Partial<User>) {
+        Object.assign(this, partial)
     }
 }
