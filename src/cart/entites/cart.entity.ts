@@ -1,9 +1,9 @@
 import { Book } from "src/book/entites/book.entity";
 import { User } from "src/user/entites/user.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('carts')
-export class Cart {
+export class CartItem {
     
     @PrimaryGeneratedColumn()
     id: number
@@ -26,4 +26,7 @@ export class Cart {
     
     @UpdateDateColumn()
     updated_at: Date
+
+    @DeleteDateColumn()
+    deleted_at: Date
 }
