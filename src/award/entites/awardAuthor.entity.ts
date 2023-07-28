@@ -1,5 +1,5 @@
 import { Author } from "src/author/entities/author.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Award } from "./award.entity";
 
 @Entity('awards_authors')
@@ -9,23 +9,21 @@ export class AwardToAuthor {
     id: number
     
     @Column()
-    author_id: number
+    year: number
     
-    @ManyToOne(() => Author, (author) => author.awardToAuthor)
+    @ManyToOne(() => Author, (author) => author.awardsToAuthor)
     author: Author
     
-    @Column()
-    award_id: number
-    
-    @OneToOne(() => Award, (award) => award.awardToAuthor)
+    @ManyToOne(() => Award, (award) => award.awardsToAuthor, { eager: true })
     award: Award
     
-    @Column()
-    year: string
     
     @CreateDateColumn()
     created_at: Date
     
     @UpdateDateColumn()
     updated_at: Date
+
+    @DeleteDateColumn()
+    deleted_at: Date
 }

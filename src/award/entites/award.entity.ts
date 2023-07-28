@@ -1,14 +1,14 @@
 import { Image } from "src/image/entites/image.entity"
-import { BeforeInsert, Column, CreateDateColumn, Entity, Index, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { BeforeInsert, Column, CreateDateColumn, DeleteDateColumn, Entity, Index, JoinColumn, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 import { AwardToTranslator } from "./awardTranslator.entity"
 import { AwardToAuthor } from "./awardAuthor.entity"
 import { AwardToBook } from "./awardBook.entity"
-import { slugify } from "src/utils/slugify"
+import { slugifyUtil } from "src/utils/slugify"
 
-export enum BADGE_TYPE {
-    TRANSLATOR_BADGE= 'translator',
-    AUTHOR_BADGE= 'author',
-    BOOK_BADGE= 'book'
+export enum AWARD_TYPE {
+    TRANSLATOR= 'translator',
+    AUTHOR= 'author',
+    BOOK= 'book'
 }
 
 @Entity('awards')
@@ -28,10 +28,10 @@ export class Award {
     
     @Column({
         type: 'enum',
-        enum: BADGE_TYPE,
-        default: BADGE_TYPE.BOOK_BADGE
+        enum: AWARD_TYPE,
+        default: AWARD_TYPE.BOOK
     })
-    badge_type: number
+    award_type: string
 
     @Column({
         unique: true
@@ -40,18 +40,22 @@ export class Award {
         unique: true
     })
     slug: string
-    
-    @OneToOne(() => Image)
+
+
+    @OneToOne(() => Image, () => {}, { cascade: ['soft-remove']})
+    @JoinColumn()
     badge: Image
     
-    @OneToMany(() => AwardToTranslator, (awardToTranslator) => awardToTranslator.award)
-    awardToTranslator?: AwardToTranslator
+    @OneToMany(() => AwardToTranslator, (awardToTranslator) => awardToTranslator.award, { cascade: true })
+    awardsToTranslator?: AwardToTranslator[]
     
-    @OneToMany(() => AwardToBook, (awardToBook) => awardToBook.award)
-    awardToAuthor?: AwardToTranslator
-    
-    @OneToMany(() => AwardToAuthor, (awardToAuthor) => awardToAuthor.award)
-    awardToBook?: AwardToAuthor
+    @OneToMany(() => AwardToBook, (awardToBook) => awardToBook.award, { cascade: true })
+    awardsToAuthor?: AwardToAuthor[]
+
+    @OneToMany(() => AwardToAuthor, (awardToAuthor) => awardToAuthor.award, { cascade: true })
+    awardsToBook?: AwardToBook[]
+
+    books: string
     
     @CreateDateColumn()
     created_at: Date
@@ -59,8 +63,12 @@ export class Award {
     @UpdateDateColumn()
     updated_at: Date
 
+    @DeleteDateColumn()
+    deleted_at: Date
+
     @BeforeInsert()
+    // @BeforeUpdate()
     slugify(): void {
-        this.slug = slugify(this.name, this.id);
+        this.slug = slugifyUtil(this.name)
     }
 }
