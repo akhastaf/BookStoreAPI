@@ -1,6 +1,6 @@
 import { Book } from "src/book/entites/book.entity";
 import { User } from "src/user/entites/user.entity";
-import { CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('wishlists')
 export class Wishlist {
@@ -20,4 +20,7 @@ export class Wishlist {
     
     @UpdateDateColumn()
     updated_at: Date
+
+    @DeleteDateColumn()
+    deleted_at: Date
 }
