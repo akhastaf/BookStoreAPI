@@ -1,5 +1,5 @@
 import { Permission } from "src/permission/entites/permission.entity";
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('roles')
 export class Role {
@@ -24,4 +24,7 @@ export class Role {
 
     @UpdateDateColumn()
     updated_at: Date
+
+    @DeleteDateColumn()
+    deleted_at: Date
 }

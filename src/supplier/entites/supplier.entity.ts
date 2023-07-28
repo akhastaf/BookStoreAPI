@@ -1,5 +1,5 @@
 import { Book } from "src/book/entites/book.entity";
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('suppliers')
 export class Supplier {
@@ -30,4 +30,7 @@ export class Supplier {
     
     @UpdateDateColumn()
     updated_at: Date
+
+    @DeleteDateColumn()
+    deleted_at: Date
 }

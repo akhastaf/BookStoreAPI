@@ -1,5 +1,5 @@
 import { Book } from "src/book/entites/book.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Order } from "./order.entity";
 import { Review } from "src/review/entites/review.entity";
 
@@ -40,4 +40,7 @@ export class OrderBook {
     
     @UpdateDateColumn()
     updated_at: Date
+
+    @DeleteDateColumn()
+    deleted_at: Date
 }

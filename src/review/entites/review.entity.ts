@@ -1,7 +1,7 @@
 import { Book } from "src/book/entites/book.entity";
 import { Image } from "src/image/entites/image.entity";
 import { User } from "src/user/entites/user.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('reviews')
 export class Review {
@@ -36,4 +36,7 @@ export class Review {
     
     @UpdateDateColumn()
     updated_at: Date
+
+    @DeleteDateColumn()
+    deleted_at: Date
 }

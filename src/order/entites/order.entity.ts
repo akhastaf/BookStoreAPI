@@ -1,5 +1,5 @@
 import { User } from "src/user/entites/user.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { OrderBook } from "./orderBook.entity";
 import { Discount } from "src/discount/entites/discount.entity";
 
@@ -67,4 +67,7 @@ export class Order {
 
     @UpdateDateColumn()
     updated_at: Date
+
+    @DeleteDateColumn()
+    deleted_at: Date
 }
