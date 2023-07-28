@@ -1,12 +1,12 @@
-export function slugify(text: string, id: number): string {
-    const slug = text
-      .toString()
-      .toLowerCase()
-      .replace(/\s+/g, '-') // Replace spaces with dashes
-      .replace(/[^\w\-]+/g, '') // Remove non-word characters
-      .replace(/\-\-+/g, '-') // Replace multiple dashes with single dash
-      .replace(/^-+/, '') // Remove leading dash
-      .replace(/-+$/, ''); // Remove trailing dash
-    
-    return `${slug}-${id}`;
+import { uuid } from "uuidv4"
+import slugifyArabic from 'slugify-arabic'
+
+
+export function slugifyUtil(text: string): string  {
+    const uid: string = uuid().substring(0, 8)
+    const slug: string = slugifyArabic(text, {remove: /[$*_+~.()'"!\-:@]+/g, replacement: '_'})
+    return `${slug}-${uid}`
 }
+
+
+// 	"slug": "دار_الجمل-2885c8e0",
