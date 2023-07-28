@@ -1,5 +1,5 @@
 import { User } from "src/user/entites/user.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('addresses')
 export class Address {
@@ -14,7 +14,7 @@ export class Address {
     phone: string
     
     @Column()
-    street: string
+    address: string
     
     @Column()
     city: string
@@ -27,6 +27,11 @@ export class Address {
     
     @Column()
     country: string
+
+    @Column({
+        default: false
+    })
+    is_default: boolean
     
     @ManyToOne(() => User, (user) => user.addresses, { onDelete: 'CASCADE'})
     user: User
@@ -36,4 +41,7 @@ export class Address {
     
     @UpdateDateColumn()
     updated_at: Date
+
+    @DeleteDateColumn()
+    deleted_at: Date
 }
