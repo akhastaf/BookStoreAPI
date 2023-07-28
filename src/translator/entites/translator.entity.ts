@@ -1,8 +1,8 @@
 import { AwardToTranslator } from "src/award/entites/awardTranslator.entity";
 import { Book } from "src/book/entites/book.entity";
 import { Image } from "src/image/entites/image.entity";
-import { slugify } from "src/utils/slugify";
-import { BeforeInsert, Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { slugifyUtil } from "src/utils/slugify";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, DeleteDateColumn, Entity, Index, JoinColumn, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('translators')
 export class Translator {
@@ -17,7 +17,7 @@ export class Translator {
         type: 'text',
         nullable: true
     })
-    description: string
+    biography: string
 
     @Column({
         unique: true
@@ -31,11 +31,11 @@ export class Translator {
     @JoinColumn()
     image: Image
 
-    @ManyToMany(() => Book, (book) => book.translators, { onDelete: 'SET NULL' })
+    @ManyToMany(() => Book, (book) => book.translators)
     books: Book[]
 
-    @OneToMany(() => AwardToTranslator, (awardToTranslator) => awardToTranslator.translator)
-    awardToTranslator: AwardToTranslator[]
+    @OneToMany(() => AwardToTranslator, (awardToTranslator) => awardToTranslator.translator, { cascade: true })
+    awardsToTranslator: AwardToTranslator[]
 
     @CreateDateColumn()
     created_at: Date
@@ -43,8 +43,12 @@ export class Translator {
     @UpdateDateColumn()
     updated_at: Date
 
+    @DeleteDateColumn()
+    deleted_at: Date
+
     @BeforeInsert()
-    slugify(): void {
-        this.slug = slugify(this.name, this.id);
+    // @BeforeUpdate()
+    slugifyWarper(): void {
+        this.slug = slugifyUtil(this.name)
     }
 }
