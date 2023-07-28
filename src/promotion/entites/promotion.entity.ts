@@ -1,5 +1,5 @@
 import { Image } from "src/image/entites/image.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('promotions')
 export class Promotion {
@@ -25,13 +25,16 @@ export class Promotion {
     @Column()
     active: boolean
     
-    @OneToOne(() => Image)
+    @OneToMany(() => Image, (image) => image.promotion, { cascade: true})
     @JoinColumn()
-    image: Image;
+    images: Image[];
     
     @CreateDateColumn()
     created_at: Date
     
     @UpdateDateColumn()
     updated_at: Date
+
+    @DeleteDateColumn()
+    deleted_at: Date
 }
