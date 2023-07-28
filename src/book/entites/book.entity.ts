@@ -7,8 +7,8 @@ import { Review } from "src/review/entites/review.entity";
 import { Serie } from "src/serie/entities/serie.entity";
 import { Supplier } from "src/supplier/entites/supplier.entity";
 import { Translator } from "src/translator/entites/translator.entity";
-import { slugify } from "src/utils/slugify";
-import { BeforeInsert, Column, CreateDateColumn, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, DeleteDateColumn, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { slugifyUtil } from "src/utils/slugify";
 
 export enum COVER_TYPE {
     HARD_COVER= 'HardCover',
@@ -55,9 +55,6 @@ export class Book {
         nullable: true
     })
     series_order: number
-
-    @Column({ nullable: true })
-    orderInSerie: number;
     
     @Column()
     dimensions: string
@@ -85,19 +82,23 @@ export class Book {
     })
     slug: string;
 
+    @OneToOne(() => Image, { cascade: true})
+    @JoinColumn()
+    image: Image
+
     @ManyToOne(() => Serie, (serie) => serie.books)
     @JoinColumn()
     serie: Serie;
     
-    @ManyToMany(() => Author, (author) => author.books, { onDelete: 'SET NULL' })
+    @ManyToMany(() => Author, (author) => author.books, { cascade: true })
     @JoinTable()
     authors: Author[]
     
-    @ManyToMany(() => Publisher, (publisher) => publisher.books, { onDelete: 'SET NULL' })
+    @ManyToMany(() => Publisher, (publisher) => publisher.books, { cascade: true })
     @JoinTable()
     publishers: Publisher[]
     
-    @ManyToMany(() => Translator, (translator) => translator.books, { onDelete: 'SET NULL' })
+    @ManyToMany(() => Translator, (translator) => translator.books, { cascade: true })
     @JoinTable()
     translators: Translator[]
     
@@ -109,15 +110,16 @@ export class Book {
     @JoinTable()
     categories: Category[];
     
-    @OneToMany(() => Image, () => {})
+    @OneToMany(() => Image, (image) => image.book, { cascade: true})
     @JoinColumn()
     images: Image[];
     
 
-    @OneToMany(() => AwardToBook, (awardToBook) => awardToBook.book)
-    awardToBook: AwardToBook[]
+    @OneToMany(() => AwardToBook, (awardToBook) => awardToBook.book, { cascade: true })
+    awardsToBook: AwardToBook[]
 
     @OneToMany(() => Review, (review) => review.book, { onDelete: 'SET NULL'})
+    @JoinColumn()
     reviews: Review[]
     
     @CreateDateColumn()
@@ -126,8 +128,12 @@ export class Book {
     @UpdateDateColumn()
     updated_at: Date
 
+    @DeleteDateColumn()
+    deleted_at: Date
+
     @BeforeInsert()
+    // @BeforeUpdate()
     slugify(): void {
-        this.slug = slugify(this.title, this.id);
+        this.slug = slugifyUtil(this.title);
     }
 }
