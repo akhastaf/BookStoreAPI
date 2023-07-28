@@ -4,6 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    restart: unless-stopped
     depends_on:
       - db
     ports:
@@ -12,33 +13,89 @@ services:
       - type: bind
         source: .
         target: /app
+    networks:
+      - bookstore-network
   db:
     image: postgres
-    restart: always
+    restart: unless-stopped
     ports:
       - '5432:5432'
     env_file:
       - ./.env
+    networks:
+      - bookstore-network
     volumes:
       - db:/var/lib/postgresql/data
-  # elasticsearch:
-  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
-  #   container_name: elasticsearch
-  #   ports:
-  #     - 9200:9200
-  #     - 9300:9300
-  #   environment:
-  #     - discovery.type=single-node
-  #   volumes:
-  #     - esdata:/usr/share/elasticsearch/data
   admin:
     image: adminer
-    restart: always
+    restart: unless-stopped
     depends_on: 
       - db
     ports:
       - 8080:8080
+    networks:
+      - bookstore-network
+  caddy:
+    image: caddy
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - bookstore-network
+  meilisearch:
+    image: 'getmeili/meilisearch:v1.2'
+    ports:
+      - '7700:7700'
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    networks:
+      - bookstore-network
+    # volumes:
+    #   - type: bind
+    #     source: ./meili_data
+    #     target: /meili_data
+  loki:
+    image: grafana/loki:2.4.0
+    volumes:
+      - ./loki:/etc/loki
+    ports:
+      - "3100:3100"
+    restart: unless-stopped
+    command: -config.file=/etc/loki/loki-config.yml
+    networks:
+      - bookstore-network
+  promtail:
+    image: grafana/promtail:2.4.0
+    volumes:
+      - /var/log:/var/log
+      - ./promtail:/etc/promtail
+    restart: unless-stopped
+    command: -config.file=/etc/promtail/protmail-config.yml
+    networks:
+      - bookstore-network
+  grafana:
+    image: grafana/grafana:latest
+    user: "501"
+    env_file:
+      - ./.env
+    volumes:
+      - ./grafana:/var/lib/grafana
+    ports:
+      - "3001:3000"
+    restart: unless-stopped
+    networks:
+      - bookstore-network
 
 volumes:
   db:
-  # esdata:
+  caddy_data:
+  caddy_config:
+
+networks:
+  bookstore-network:
