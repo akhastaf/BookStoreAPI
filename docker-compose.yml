@@ -96,6 +96,7 @@ volumes:
   db:
   caddy_data:
   caddy_config:
+  app_data:
 
 networks:
   bookstore-network:

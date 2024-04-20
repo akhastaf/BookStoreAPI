@@ -32,9 +32,6 @@ export class AddressService {
                 },
                 where: {
                     id: id,
-                    user: {
-                        id: user.id
-                    }
                 }
             })
         } catch (error) {
@@ -49,9 +46,6 @@ export class AddressService {
            const addressToSetDefault : Address = await this.addressRepository.findOneOrFail({
                 where: {
                     id: id,
-                    user: {
-                        id: user.id
-                    }
                 }
             })
             const defaultAddrres: Address = await this.addressRepository.findOne({
@@ -59,9 +53,6 @@ export class AddressService {
                     user: true
                 },
                 where: {
-                    user: {
-                        id: user.id
-                    },
                     is_default: true
                 }
             })
@@ -84,9 +75,6 @@ export class AddressService {
         try {
            return await this.addressRepository.findOneOrFail({
                 where: {
-                    user: {
-                        id: user.id
-                    },
                     is_default: true
                 }
             })
@@ -115,10 +103,6 @@ export class AddressService {
             const address : Address = await this.addressRepository.findOneOrFail({
                 where: {
                     id: id,
-                    user: {
-                        id: user.id
-                    }
-
                 }
             })
             return await this.addressRepository.update(address.id, updateAddressDto)
@@ -135,10 +119,6 @@ export class AddressService {
             const address : Address = await this.addressRepository.findOneOrFail({
                 where: {
                     id: id,
-                    user: {
-                        id: user.id
-                    }
-
                 }
             })
             if (address.is_default === true)

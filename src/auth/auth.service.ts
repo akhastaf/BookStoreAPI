@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { RegisterDto } from './dto/register.dto';
 import { User } from 'src/user/entites/user.entity';
@@ -11,9 +11,14 @@ import { ResetPasswordDto } from './dto/resetPassowrd.dto';
 import { EntityNotFoundError } from 'typeorm';
 import {TokenExpiredError } from 'jsonwebtoken'
 import { MailService } from 'src/mail/mail.service';
+import { TwoFactorDto } from './dto/twoFactor.dto';
+import * as speakeasy from 'speakeasy'
+import { use } from 'passport';
 
 @Injectable()
 export class AuthService {
+    private readonly logger = new Logger(AuthService.name);
+
     constructor(private readonly configService: ConfigService,
         private readonly userService: UserService,
         private readonly mailService: MailService,
@@ -91,7 +96,7 @@ export class AuthService {
         try {
             const payload = await this.jwtService.verifyAsync(token, {
                 secret: this.configService.get('JWT_EMAIL_VERIFICATION_SECRET'),
-                ignoreExpiration: true
+                ignoreExpiration: false
             })
             console.log(payload)
             console.log(payload.email)
@@ -116,6 +121,30 @@ export class AuthService {
             throw new InternalServerErrorException('cant sign the tokens')
         }
     }
+
+    async twoFactor(twoFactorDto: TwoFactorDto) : Promise<{ user: User, tokens: Tokens}> {
+        try {
+            const user : User = await this.userService.getByEmail(twoFactorDto.email)
+            if (!user.two_factor_enabled || user.two_factor_secret.length === 0)
+                throw new ForbiddenException(`user: ${twoFactorDto.email} not yet activited 2fa`)
+            const verified: boolean = speakeasy.totp.verify({secret: user.two_factor_secret, encoding:'base32', token: twoFactorDto.token, window: 6})
+            if (!verified)
+                throw new BadRequestException(`token are invalid`)
+            const tokens: Tokens = await this.login(user)
+            return { user, tokens}
+        } catch (error) {
+            throw error
+        }
+    }
+
+
+
+
+
+
+
+
+
 
     async validateUser(email: string, password: string): Promise<User> {
         try {

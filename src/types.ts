@@ -1,5 +1,10 @@
 import { Request } from "express";
 import { User } from "./user/entites/user.entity";
+import { Ability } from "@casl/ability";
+import { Action } from "./permission/entites/permission.entity";
+
+export type PermissionObjectType = any;
+export type AppAbility = Ability<[Action, PermissionObjectType]>;
 
 export interface JwtPayload {
     sub: number
@@ -25,4 +30,16 @@ export interface UploadedFile {
     filename: string;
     path: string;
     buffer: Buffer;
+  }
+export interface RawRule {
+    action: string | string[]
+    subject?: string | string[]
+    /** an array of fields to which user has (or not) access */
+    fields?: string[]
+    /** an object of conditions which restricts the rule scope */
+    conditions?: any
+    /** indicates whether rule allows or forbids something */
+    inverted?: boolean
+    /** message which explains why rule is forbidden */
+    reason?: string
   }

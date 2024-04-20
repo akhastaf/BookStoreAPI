@@ -27,6 +27,7 @@ import { MailModule } from './mail/mail.module';
 import { MeilisearchModule } from './meilisearch/meilisearch.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { AuthzModule } from './authz/authz.module';
 
 @Module({
   imports: [
@@ -57,7 +58,8 @@ import { join } from 'path';
     SerieModule,
     SearchModule,
     MailModule,
-    MeilisearchModule],
+    MeilisearchModule,
+    AuthzModule],
   controllers: [],
   providers: [],
 })

@@ -161,6 +161,21 @@ export class AuthController {
   }
 
   @Post('two-factor')
-  async twoFactor(@Body() twoFactorDto: TwoFactorDto) : Promise<void> {}
+  async twoFactor(@Req() req: Request, @Res() res: Response, @Body() twoFactorDto: TwoFactorDto) : Promise<void> {
+    try {
+      const { tokens, user } = await this.authService.twoFactor(twoFactorDto)
+      const expireIn = new Date()
+      expireIn.setMonth(expireIn.getMonth() + 3)
+      res.cookie('refresh_token', tokens.refresh_token, {
+        expires: expireIn,
+        secure: true,
+        httpOnly: true
+      })
+      const { password, two_factor_secret, two_factor_recovery_code, password_reset_token, verification_token, ...userdata} = user
+      res.send({ user: userdata, access_token: tokens.access_token})
+    } catch (error) {
+      throw error
+    }
+  }
 
 }

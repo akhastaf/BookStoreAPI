@@ -65,7 +65,7 @@ export class Book {
         default: COVER_TYPE.PAPERBACK
     })
     cover_type: string
-    
+     
     @Column({
         type: 'date'
     })

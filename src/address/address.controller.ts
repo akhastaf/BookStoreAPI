@@ -5,6 +5,8 @@ import { RequestWithAuth } from 'src/types';
 import { CreateAddressDto } from './dto/createAddress.dto';
 import { UpdateAddressDto } from './dto/updateAddress.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { checkAbilites } from 'src/authz/decorators/abilities.decorator';
+import { AbilitiesGuard } from 'src/authz/guards/abilities.guard';
 
 @Controller('address')
 @UseGuards(JwtGuard)
@@ -29,6 +31,11 @@ export class AddressController {
     }
   }
   
+  // @checkAbilites({
+  //   action: 'read',
+  //   subject: 'address'
+  // })
+  // @UseGuards(AbilitiesGuard)
   @Get()
   async getAllAddresses(@Req() req: RequestWithAuth) : Promise<Address[]> {
     try {
@@ -38,6 +45,12 @@ export class AddressController {
     }
   }
   
+  @checkAbilites({
+    action: 'read',
+    subject: 'address',
+    conditions: '	{ user: { id: $id } }	'
+  })
+  @UseGuards(AbilitiesGuard)
   @Get(':id')
   async getOneAddress(@Param('id', ParseIntPipe) id: number, @Req() req: RequestWithAuth) : Promise<Address> {
     try {

@@ -3,13 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { RegisterDto } from 'src/auth/dto/register.dto';
 import { EntityNotFoundError, Repository } from 'typeorm';
 import { PROVIDER, User } from './entites/user.entity';
-import { fromString, uuid } from 'uuidv4';
-import { use } from 'passport';
 import * as bcrypt from 'bcryptjs'
 import { JwtService } from '@nestjs/jwt';
-import { JwtPayload } from 'src/types';
 import { ConfigService } from '@nestjs/config';
-import { emit } from 'process';
+import { Role } from 'src/role/entites/role.entity';
 
 @Injectable()
 export class UserService {
@@ -21,7 +18,8 @@ export class UserService {
         try {
             const user = this.userRepository.create(registerDto)
             user.verification_token = this.jwtService.sign({ email: user.email }, {
-                secret: this.configService.get('JWT_EMAIL_VERIFICATION_SECRET')
+                expiresIn: this.configService.get('JWT_EMAIL_VERIFICATION_EXPARATION'),
+                secret: this.configService.get('JWT_EMAIL_VERIFICATION_SECRET'),
             })
             return await this.userRepository.save(user)
         } catch (error) {
@@ -36,6 +34,9 @@ export class UserService {
             return this.userRepository.findOneOrFail({
                 where: {
                     email: email ?? '',
+                },
+                relations: {
+                    role: true
                 }
             })
         } catch (error) {

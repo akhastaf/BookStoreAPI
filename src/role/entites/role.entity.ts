@@ -1,5 +1,5 @@
 import { Permission } from "src/permission/entites/permission.entity";
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('roles')
 export class Role {
@@ -7,7 +7,9 @@ export class Role {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column()
+    @Column({
+        unique: true
+    })
     name: string
 
     @Column({
@@ -17,7 +19,7 @@ export class Role {
     description: string
 
     @OneToMany(() => Permission, (permission) => permission.role)
-    permission: Permission[]
+    permissions: Permission[]
     
     @CreateDateColumn()
     created_at: Date

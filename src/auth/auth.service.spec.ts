@@ -12,7 +12,7 @@ describe('AuthService', () => {
     service = module.get<AuthService>(AuthService);
   });
 
-  it('should be defined', () => {
+  it('defualt user should have User as', () => {
     expect(service).toBeDefined();
   });
 });

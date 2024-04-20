@@ -8,6 +8,6 @@ import { ImageModule } from 'src/image/image.module';
 @Module({
   imports: [TypeOrmModule.forFeature([Promotion]), ImageModule],
   controllers: [PromotionController],
-  providers: [PromotionService]
+  providers: [PromotionService],
 })
 export class PromotionModule {}
